@@ -1,6 +1,6 @@
 # Security audit
 
-Audit date: 2026-07-13  
+Audit date: 2026-07-13
 Audited version: 1.1.1
 
 ## Scope

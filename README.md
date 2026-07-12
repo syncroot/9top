@@ -1,7 +1,7 @@
 # 9top
 
 `9top` is a lightweight, full-screen thermal and system monitor for Apple
-Silicon Macs. It is a single native executable with no runtime dependencies,
+Silicon Macs. It is a single pure-C executable with no runtime dependencies,
 helper processes, sudo requirement, analytics, or network access.
 
 ## Features
@@ -58,18 +58,18 @@ NO_COLOR=1 9top
 Xcode Command Line Tools are required:
 
 ```sh
-swift test
-swift build -c release
+make test
+make release
 ```
 
-The binary is generated at `.build/release/9top`. Build artifacts are ignored
-and can be removed with `swift package clean`.
+The binary is generated at `build/9top`. Build artifacts are ignored and can
+be removed with `make clean`.
 
 ## Resource profile
 
-On the development M-series Mac at the default interval, 9top used about 0.4%
-average CPU, 9 MB resident memory, and no helper processes. Actual usage varies
-by hardware and macOS version.
+9top uses event-driven rendering, retains no metric history, and launches no
+helper processes. Resource usage varies by hardware and macOS version; measured
+figures for each release are published in its release notes.
 
 ## Private API notice
 

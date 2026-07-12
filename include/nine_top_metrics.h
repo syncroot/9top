@@ -1,5 +1,5 @@
-#ifndef NINE_TOP_NATIVE_H
-#define NINE_TOP_NATIVE_H
+#ifndef NINE_TOP_METRICS_H
+#define NINE_TOP_METRICS_H
 
 #include <stdint.h>
 
@@ -18,6 +18,7 @@ typedef struct {
 // Returns zero when the public system metrics were collected successfully.
 // Individual unavailable temperature fields are reported as NAN.
 int nine_top_read_metrics(nine_top_metrics *metrics, int include_battery);
+void nine_top_close_metrics(void);
 void nine_top_install_signal_handlers(void);
 int nine_top_should_terminate(void);
 

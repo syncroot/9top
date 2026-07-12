@@ -1,4 +1,4 @@
-#include "nine_top_native.h"
+#include "nine_top_metrics.h"
 
 #include <CoreFoundation/CoreFoundation.h>
 #include <IOKit/IOKitLib.h>
@@ -261,4 +261,11 @@ int nine_top_read_metrics(nine_top_metrics *metrics, int include_battery) {
     metrics->cpu_usage = cpu_usage();
     metrics->gpu_usage = gpu_usage();
     return memory_metrics(metrics);
+}
+
+void nine_top_close_metrics(void) {
+    if (smc_connection != IO_OBJECT_NULL) {
+        IOServiceClose(smc_connection);
+        smc_connection = IO_OBJECT_NULL;
+    }
 }

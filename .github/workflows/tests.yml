@@ -8,11 +8,11 @@ permissions:
   contents: read
 
 jobs:
-  native-tests:
+  native-build:
     runs-on: macos-15
     steps:
       - uses: actions/checkout@v5
       - name: Test
-        run: swift test
+        run: make test
       - name: Build release
-        run: swift build -c release
+        run: make release

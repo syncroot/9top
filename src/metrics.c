@@ -52,9 +52,13 @@ static void request_termination(int signal_number) {
 }
 
 void nine_top_install_signal_handlers(void) {
-    signal(SIGINT, request_termination);
-    signal(SIGTERM, request_termination);
-    signal(SIGHUP, request_termination);
+    struct sigaction action;
+    memset(&action, 0, sizeof(action));
+    action.sa_handler = request_termination;
+    sigemptyset(&action.sa_mask);
+    sigaction(SIGINT, &action, NULL);
+    sigaction(SIGTERM, &action, NULL);
+    sigaction(SIGHUP, &action, NULL);
 }
 
 int nine_top_should_terminate(void) {
@@ -131,6 +135,7 @@ static void smc_initialize(void) {
     uint32_t raw_count = 0;
     memcpy(&raw_count, output.bytes, sizeof(raw_count));
     uint32_t count = __builtin_bswap32(raw_count);
+    if (count > 16384) return;
 
     for (uint32_t index = 0; index < count; index++) {
         memset(&input, 0, sizeof(input));
@@ -212,8 +217,11 @@ static double gpu_usage(void) {
 static double cpu_usage(void) {
     host_cpu_load_info_data_t current = {0};
     mach_msg_type_number_t count = HOST_CPU_LOAD_INFO_COUNT;
-    if (host_statistics(mach_host_self(), HOST_CPU_LOAD_INFO,
-                        (host_info_t)&current, &count) != KERN_SUCCESS) return NAN;
+    mach_port_t host = mach_host_self();
+    kern_return_t result = host_statistics(host, HOST_CPU_LOAD_INFO,
+                                           (host_info_t)&current, &count);
+    mach_port_deallocate(mach_task_self(), host);
+    if (result != KERN_SUCCESS) return NAN;
     if (!has_previous_cpu) {
         previous_cpu = current;
         has_previous_cpu = 1;
@@ -235,8 +243,11 @@ static int memory_metrics(nine_top_metrics *metrics) {
 
     vm_statistics64_data_t vm = {0};
     mach_msg_type_number_t count = HOST_VM_INFO64_COUNT;
-    if (host_statistics64(mach_host_self(), HOST_VM_INFO64,
-                          (host_info64_t)&vm, &count) != KERN_SUCCESS) return -1;
+    mach_port_t host = mach_host_self();
+    kern_return_t result = host_statistics64(host, HOST_VM_INFO64,
+                                             (host_info64_t)&vm, &count);
+    mach_port_deallocate(mach_task_self(), host);
+    if (result != KERN_SUCCESS) return -1;
     int64_t pages = (int64_t)vm.active_count + vm.inactive_count + vm.wire_count
                   + vm.speculative_count + vm.compressor_page_count
                   - vm.purgeable_count - vm.external_page_count;

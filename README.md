@@ -1,8 +1,8 @@
 # 9top
 
 `9top` is a lightweight, full-screen thermal and system monitor for Apple
-Silicon Macs. It is a single pure-C executable with no runtime dependencies,
-helper processes, sudo requirement, analytics, or network access.
+Silicon Macs. It is a single pure-C executable with no third-party runtime
+dependencies, helper processes, sudo requirement, analytics, or network calls.
 
 ## Features
 
@@ -21,11 +21,14 @@ helper processes, sudo requirement, analytics, or network access.
 
 ## Install
 
-Download the binary from the latest GitHub release:
+Download and verify the binary from the latest GitHub release:
 
 ```sh
-curl -fL https://github.com/syncroot/9top/releases/latest/download/9top-arm64 -o ~/.local/bin/9top
-chmod +x ~/.local/bin/9top
+curl -fLO https://github.com/syncroot/9top/releases/latest/download/9top-arm64
+curl -fLO https://github.com/syncroot/9top/releases/latest/download/SHA256SUMS
+shasum -a 256 -c SHA256SUMS
+mkdir -p ~/.local/bin
+install -m 755 9top-arm64 ~/.local/bin/9top
 ```
 
 Ensure `~/.local/bin` is in `PATH`, then run:
@@ -82,6 +85,10 @@ maintenance.
 
 All metrics remain on the Mac. 9top does not connect to the network, write
 monitoring data to disk, or collect analytics.
+
+See [SECURITY.md](SECURITY.md) for vulnerability reporting and security
+boundaries. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for upstream
+attribution.
 
 ## License
 

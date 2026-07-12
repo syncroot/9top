@@ -1,7 +1,6 @@
 #include "nine_top_metrics.h"
 #include "nine_top_ui.h"
 
-#include <errno.h>
 #include <math.h>
 #include <poll.h>
 #include <stdio.h>
@@ -214,17 +213,27 @@ static void render(const snapshot *value, size_t width, size_t height, int pause
 static double parse_interval(int argc, char **argv) {
     for (int index = 1; index < argc; index++) {
         if (strcmp(argv[index], "--version") == 0) {
-            puts("9top 1.1.0");
+            puts("9top 1.1.1");
+            exit(0);
+        }
+        if (strcmp(argv[index], "--help") == 0 || strcmp(argv[index], "-h") == 0) {
+            puts("Usage: 9top [--interval SECONDS]\n"
+                 "\nOptions:\n"
+                 "  -i, --interval SECONDS  sample every N seconds (minimum: 1)\n"
+                 "  -h, --help              show this help\n"
+                 "      --version           show the version");
             exit(0);
         }
         if ((strcmp(argv[index], "--interval") == 0 || strcmp(argv[index], "-i") == 0)
             && index + 1 < argc) {
             char *end = NULL;
             double value = strtod(argv[index + 1], &end);
-            if (end && *end == '\0' && value >= 1) return value;
+            if (end && *end == '\0' && isfinite(value) && value >= 1) return value;
             fprintf(stderr, "9top: interval must be at least one second\n");
             exit(2);
         }
+        fprintf(stderr, "9top: unknown option: %s\n", argv[index]);
+        exit(2);
     }
     return 2;
 }
